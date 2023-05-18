@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from scipy import optimize
 from prophet import Prophet
 from prophet.plot import plot_plotly, plot_components_plotly
@@ -53,24 +53,16 @@ def sin_plot(x, amp, per, phase, vert, growth):
   return (((amp)*np.sin(per*(phase+x)))+vert) + (growth*x)
 
 
-def solar_data():
-    dated = load_data("SUN").copy()
-    dated['ds'] = pd.to_datetime(dated['ds'])
-    dated = dated[['ds', 'y']]
-    
-    last_date = dated['ds'].iloc[-1]
-    new_index = pd.date_range(start=last_date, periods=180, freq='D')
-    new_date_range = pd.DataFrame(new_index, columns=['ds'])
-    new_date_range['y'] = np.NaN
-    extension = pd.concat([dated, new_date_range]).reset_index()
-    extension = extension.drop(columns=['index'])
-    #fig = px.scatter(extension, x="ds", y="y")
-    fig = px.scatter()
-    fig.add_scatter(x=extension['ds'], y=extension['y'], mode="markers",
-                    marker=dict(size=3),
-                    name="Ground Truth"
+def add_prophet(fig, dated, extension):
+    m = Prophet()
+    m.fit(dated)
+    prophet_forecast = m.predict(extension)
+    fig.add_scatter(x=extension['ds'], y=prophet_forecast['yhat'],
+                    name="Prophet Forecast",
                     )
+    return fig
 
+def add_sine(fig, dated, extension):
     params, params_covariance = optimize.curve_fit(sin_plot, 
                                                    dated.index, dated['y'],
                                                    p0=[40000, .0172, 0.25, 90000, 10],
@@ -83,13 +75,29 @@ def solar_data():
                     name="Sine Forecast",
                     line=dict(width=4)
                     )
+    return fig
 
-    m = Prophet()
-    m.fit(dated)
-    prophet_forecast = m.predict(extension)
-    fig.add_scatter(x=extension['ds'], y=prophet_forecast['yhat'],
-                    name="Prophet Forecast",
+
+def render_data(energy_source):
+    dated = load_data(energy_source).copy()
+    dated['ds'] = pd.to_datetime(dated['ds'])
+    dated = dated[['ds', 'y']]
+    
+    last_date = dated['ds'].iloc[-1]
+    new_index = pd.date_range(start=last_date, periods=180, freq='D')
+    new_date_range = pd.DataFrame(new_index, columns=['ds'])
+    new_date_range['y'] = np.NaN
+    extension = pd.concat([dated, new_date_range]).reset_index()
+    extension = extension.drop(columns=['index'])
+    fig = px.scatter()
+
+    fig.add_scatter(x=extension['ds'], y=extension['y'], mode="markers",
+                    marker=dict(size=3),
+                    name="Ground Truth"
                     )
+
+    fig = add_sine(fig, dated, extension)
+    fig = add_prophet(fig, dated, extension)
 
     # Add range slider
     fig.update_layout(
@@ -107,16 +115,23 @@ def solar_data():
     return fig
 
 
-@app.route('/cali')
+@app.route('/california_dashboard', methods=['GET', 'POST'])
 def california_dashboard():
-    fig = solar_data()
-    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
-    return render_template('calidash.html', graphJSON=graphJSON)
+    if request.method == 'POST':
+        #return str(request.form)
+        energy_type = request.form['energy_source']
+        fig = render_data(energy_type)
+        graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+        return render_template('calidash.html', graphJSON=graphJSON)
+    else:
+        fig = render_data("SUN")
+        graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+        return render_template('calidash.html', graphJSON=graphJSON)
 
 
 @app.route('/')
 def bar_with_plotly():
-    return "<a href=\"cali\">California Energy Production Dashboard</a>"
+    return "<a href=\"california_dashboard\">California Energy Production Dashboard</a>"
 
 
 if __name__ == '__main__':
