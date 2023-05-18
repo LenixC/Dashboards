@@ -53,14 +53,24 @@ def sin_plot(x, amp, per, phase, vert, growth):
   return (((amp)*np.sin(per*(phase+x)))+vert) + (growth*x)
 
 
+def harmonic_sine(x, b_1, b_2, b_3, b_4, period, phase, vert, amp, growth):
+  sin1 = b_1*np.sin(period*(phase+x))
+  sin2 = b_2*np.sin(2*period*(phase+x))
+  sin3 = b_3*np.sin(3*period*(phase+x))
+  sin4 = b_4*np.sin(4*period*(phase+x))
+  return amp*(sin1 + sin2 + sin3 + sin4) + (growth*x) + vert
+
+
 def add_prophet(fig, dated, extension):
     m = Prophet()
     m.fit(dated)
     prophet_forecast = m.predict(extension)
     fig.add_scatter(x=extension['ds'], y=prophet_forecast['yhat'],
                     name="Prophet Forecast",
+                    line=dict(width=1)
                     )
     return fig
+
 
 def add_sine(fig, dated, extension):
     params, params_covariance = optimize.curve_fit(sin_plot, 
@@ -75,6 +85,27 @@ def add_sine(fig, dated, extension):
                     name="Sine Forecast",
                     line=dict(width=4)
                     )
+    return fig
+
+
+def add_harmonic_sine(fig, dated, extension):
+    params, params_covariance = optimize.curve_fit(harmonic_sine, 
+                                                   dated.index, dated['y'],
+                                                   p0=[3, 1, 1, 1, 
+                                                       0.0172, 0, 0,
+                                                       0, 0],
+                                                   )
+
+    fig.add_scatter(x=extension['ds'], y=harmonic_sine(extension.index, 
+                                                       params[0], params[1], 
+                                                       params[2], params[3], 
+                                                       params[4], params[5],
+                                                       params[6], params[7],
+                                                       params[8]),
+                    name="Stacked Sine Forecast",
+                    line=dict(width=4)
+                    )
+
     return fig
 
 
@@ -96,8 +127,13 @@ def render_data(energy_source):
                     name="Ground Truth"
                     )
 
-    fig = add_sine(fig, dated, extension)
     fig = add_prophet(fig, dated, extension)
+    if energy_source in ["NG", "COL"]:
+        fig = add_harmonic_sine(fig, dated, extension)
+    if energy_source in ["NUC", "OIL", "WAT"]:
+        pass
+    else:
+        fig = add_sine(fig, dated, extension)
 
     # Add range slider
     fig.update_layout(
