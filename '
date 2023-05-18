@@ -54,6 +54,7 @@ def sin_plot(x, amp, per, phase, vert, growth):
 
 
 def solar_data():
+    #try:
     dated = load_data("SUN").copy()
     dated['ds'] = pd.to_datetime(dated['ds'])
     dated = dated[['ds', 'y']]
@@ -67,9 +68,11 @@ def solar_data():
     #fig = px.scatter(extension, x="ds", y="y")
     fig = px.scatter()
     fig.add_scatter(x=extension['ds'], y=extension['y'], mode="markers",
-                    marker=dict(size=3),
-                    name="Ground Truth"
-                    )
+                    marker=dict(size=3, color="#000"),
+                    name="Ground Truth")
+
+    print(dated)
+    print(extension)
 
     params, params_covariance = optimize.curve_fit(sin_plot, 
                                                    dated.index, dated['y'],
@@ -81,15 +84,14 @@ def solar_data():
                                                       params[2], params[3], 
                                                       params[4]),
                     name="Sine Forecast",
-                    line=dict(width=4)
-                    )
+                    line=dict(color="#e63946"))
 
     m = Prophet()
     m.fit(dated)
     prophet_forecast = m.predict(extension)
     fig.add_scatter(x=extension['ds'], y=prophet_forecast['yhat'],
                     name="Prophet Forecast",
-                    )
+                    line=dict(color="#457b9d"))
 
     # Add range slider
     fig.update_layout(
@@ -100,11 +102,12 @@ def solar_data():
             type="date",
             showgrid=False,
         ),
-        yaxis=dict(
-            showgrid=False,
-        )
+
     )
+
     return fig
+    #except:
+    #    return "OOPS"
 
 
 @app.route('/cali')
