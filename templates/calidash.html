@@ -3,15 +3,20 @@
   <body>
     <h1>California Energy Production</h1>
     <form action="/california_dashboard" method="post">
-      <select id="energy_source" name="energy_source">
-        <option value="COL">Coal</option>
-        <option value="NG">Natural Gas</option>
-        <option value="NUC">Nuclear</option>
-        <option value="OIL">Oil</option>
-        <option value="SUN">Solar</option>
-        <option value="WAT">Hydroelectric</option>
-        <option value="WND">Wind</option>
-      </select>
+      <input type="radio" id="COL" value="COL" name="energy_source">
+      <label for="COL">Coal</label>
+      <input type="radio" id="NG"  value="NG"  name="energy_source">
+      <label for="NG ">Natural Gas</label>
+      <input type="radio" id="NUC" value="NUC" name="energy_source">
+      <label for="">Nuclear</label>
+      <input type="radio" id="OIL" value="OIL" name="energy_source">
+      <label for="NG ">Oil</label>
+      <input type="radio" id="SUN" value="SUN" name="energy_source">
+      <label for="NG ">Solar</label>
+      <input type="radio" id="WAT" value="WAT" name="energy_source">
+      <label for="NG ">Hydroelectric</label>
+      <input type="radio" id="WND" value="WND" name="energy_source">
+      <label for="WND">Wind</label>
       <input type="submit" value="submit" /></p>
     </form>
     <div id='chart' class='chart'”></div>

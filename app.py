@@ -118,8 +118,8 @@ def render_data(energy_source):
 @app.route('/california_dashboard', methods=['GET', 'POST'])
 def california_dashboard():
     if request.method == 'POST':
-        #return str(request.form)
         energy_type = request.form['energy_source']
+        print(energy_type)
         fig = render_data(energy_type)
         graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
         return render_template('calidash.html', graphJSON=graphJSON)
