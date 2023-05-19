@@ -29,6 +29,15 @@ energy_names = {'COL': 'Coal',
                 'WND': 'Wind'}
 
 
+def human_format(num):
+    num = float('{:.3g}'.format(num))
+    magnitude = 0
+    while abs(num) >= 1000:
+        magnitude += 1
+        num /= 1000.0
+    return '{}{}'.format('{:f}'.format(num).rstrip('0').rstrip('.'), ['', 'K', 'M', 'B', 'T'][magnitude])
+
+
 def load_data(energy_source):
     connection = sqlite3.connect('EnergySources.db')
     query = """select  
@@ -208,7 +217,11 @@ def render_data(energy_source, prediction_days):
         ),
         yaxis=dict(
             showgrid=False,
-        )
+        ),
+        margin=dict(t=0,
+                    b=0,
+                    l=0,
+                    r=0,)
     )
     return fig
 
@@ -217,6 +230,7 @@ def render_data(energy_source, prediction_days):
 def california_dashboard():
     pull_if_needed()
     energy_today, energy_pie = get_todays_energy()
+    energy_today = human_format(energy_today)
     pieJSON = json.dumps(energy_pie, cls=plotly.utils.PlotlyJSONEncoder)
     context = {'graphJSON': None,
                'pieJSON': pieJSON,

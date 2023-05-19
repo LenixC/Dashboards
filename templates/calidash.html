@@ -1,37 +1,104 @@
 <!doctype html>
 <html>
+  <head>  
+    <link rel="stylesheet" href="{{url_for('static',filename='css/main.css')}}">
+  </head>
+
   <body>
-    <h1>California Energy Production</h1>
-    <h2>Today's Energy Production: {{ context.energy_today }} MWh</h2>
-    <div id='pie' class='chart'”></div>
+    <div class="flex pt-4 pb-16">
+      <h1 class="flex flex-shrink-3 break-words text-5xl font-bold">California Energy Production</h1>
+      <div class="flex-grow"></div>
+      <div class="flex flex-col items-center pl-4 pr-4">
+        <h2 class="flex text-center">Today's Energy Production:</h2> 
+        <h2 class="flex text-center text-4xl">{{ context.energy_today }} MWh</h2>
+      </div>
+      <div id="pie" class="chart flex items-center pl-4 pr-4"></div>
+    </div>
 
-    <form action="/california_dashboard" method="post">
-      <input type="radio" id="COL" value="COL" name="energy_source">
-      <label for="COL">Coal</label>
-      <input type="radio" id="NG"  value="NG"  name="energy_source">
-      <label for="NG" >Natural Gas</label>
-      <input type="radio" id="NUC" value="NUC" name="energy_source">
-      <label for="NUC">Nuclear</label>
-      <input type="radio" id="OIL" value="OIL" name="energy_source">
-      <label for="OIL">Oil</label>
-      <input type="radio" id="SUN" value="SUN" name="energy_source" checked>
-      <label for="SUN">Solar</label>
-      <input type="radio" id="WAT" value="WAT" name="energy_source">
-      <label for="WAT">Hydroelectric</label>
-      <input type="radio" id="WND" value="WND" name="energy_source">
-      <label for="WND">Wind</label>
+    <div class="flex items-center justify-center">
+      <h2 class="text-3xl">{{ context.energy_type }} Power Production</h2>
+    </div>
+    <div class="flex flex-wrap">
+      <div class="w-full lg:w-1/3 pt-6 pl-4 pr-4">
+        <form action="/california_dashboard" method="post">
+          <div class="flex lg:flex-col flex-wrap justify-center items-start pb-4 space-y-2">
+            <div class="flex items-center pl-4 w-full 
+                        border border-gray-200 
+                        rounded dark:border-gray-700">
+              <input type="radio" id="COL" value="COL" name="energy_source" 
+                     class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+              <label for="COL" 
+                     class="w-full py-1 ml-2 text-sm font-medium text-gray-900">Coal</label>
+            </div>
+            <div class="flex items-center pl-4 w-full
+                        border border-gray-200 
+                        rounded dark:border-gray-700">
+              <input type="radio" id="NG" value="NG"  name="energy_source" 
+                     class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+              <label for="NG" 
+                     class="w-full py-1 ml-2 text-sm font-medium text-gray-900">Natural Gas</label>
+            </div>
+            <div class="flex items-center pl-4 w-full 
+                        border border-gray-200 
+                        rounded dark:border-gray-700">
+              <input type="radio" id="NUC" value="NUC" name="energy_source"
+                     class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+              <label for="NUC"
+                     class="w-full py-1 ml-2 text-sm font-medium text-gray-900">Nuclear</label>
+            </div>
+            <div class="flex items-center pl-4 w-full 
+                        border border-gray-200 
+                        rounded dark:border-gray-700">
+              <input type="radio" id="OIL" value="OIL" name="energy_source"
+                     class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+              <label for="OIL"
+                     class="w-full py-1 ml-2 text-sm font-medium text-gray-900">Oil</label>
+            </div>
+            <div class="flex items-center pl-4 w-full 
+                        border border-gray-200 
+                        rounded dark:border-gray-700">
+              <input type="radio" id="SUN" value="SUN" name="energy_source"
+                     class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+              <label for="SUN"
+                     class="w-full py-1 ml-2 text-sm font-medium text-gray-900">Sun</label>
+            </div>
+            <div class="flex items-center pl-4 w-full 
+                        border border-gray-200 
+                        rounded dark:border-gray-700">
+              <input type="radio" id="WAT" value="WAT" name="energy_source"
+                     class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+              <label for="WAT"
+                     class="w-full py-1 ml-2 text-sm font-medium text-gray-900">Hydroelectric</label>
+            </div>
+            <div class="flex items-center pl-4 w-full 
+                        border border-gray-200 
+                        rounded dark:border-gray-700">
+              <input type="radio" id="WND" value="WND" name="energy_source"
+                     class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+              <label for="WND"
+                     class="w-full py-1 ml-2 text-sm font-medium text-gray-900">Water</label>
+            </div>
+          </div>
 
-      <p>
-        <label for="prediction">Prediction in days (0-365)</label>
-        <input type="range" id="prediction" name="prediction"
-          min="0" max="365" step="1" value="180">
-        <p>Days: <output id="pred_days">180</output></p>
-      </p>
+          <div class="flex flex-wrap items-center justify-center pb-4">
+            <label for="prediction">Prediction in days (0-365)</label>
+            <input type="range" id="prediction" name="prediction"
+              min="0" max="365" step="1" value="180">
+            <p>
+            <output id="pred_days" class="pl-4">180</output></p>
+          </div>
 
-      <input type="submit" value="submit" />
-    </form>
-    <h2>{{ context.energy_type }} Power Production</h2>
-    <div id='chart' class='chart'”></div>
+          <div class="flex justify-center">
+            <button type="submit" value="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+              Predict
+            </button>
+          </div>
+        </form>
+      </div>
+      <div class="w-full lg:w-2/3 m-0 p-0">
+        <div id="chart" class="chart"></div>
+      </div>
+    </div>
   </body>
  
   <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
