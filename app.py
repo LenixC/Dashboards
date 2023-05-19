@@ -99,7 +99,14 @@ def get_todays_energy():
     x_source = r_source.json()
     df_today = pd.read_json(json.dumps(x_source["response"]["data"]))[['fueltype', 'value']]
   
-    fig = px.pie(df_today, values='value', names='fueltype')
+    fig = px.pie(df_today, values='value', names='fueltype',
+                 width=150, height=150)
+    fig.update_layout(margin=dict(t=0,
+                                  b=0,
+                                  l=0,
+                                  r=0,),
+                      showlegend=False)
+    fig.update_traces(textinfo='none')
     
     return df_today['value'].sum(), fig
 
