@@ -98,8 +98,10 @@ def get_todays_energy():
 
     x_source = r_source.json()
     df_today = pd.read_json(json.dumps(x_source["response"]["data"]))[['fueltype', 'value']]
+  
+    fig = px.pie(df_today, values='value', names='fueltype')
     
-    return df_today['value'].sum()
+    return df_today['value'].sum(), fig
 
 
 def sin_plot(x, amp, per, phase, vert, growth):
@@ -207,8 +209,10 @@ def render_data(energy_source, prediction_days):
 @app.route('/california_dashboard', methods=['GET', 'POST'])
 def california_dashboard():
     pull_if_needed()
-    energy_today = get_todays_energy()
+    energy_today, energy_pie = get_todays_energy()
+    pieJSON = json.dumps(energy_pie, cls=plotly.utils.PlotlyJSONEncoder)
     context = {'graphJSON': None,
+               'pieJSON': pieJSON,
                'energy_type': "Solar",
                'energy_today': energy_today}
     fig = None;
