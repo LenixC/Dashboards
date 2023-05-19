@@ -33,6 +33,14 @@ app = Flask(__name__)
 #    df = pd.read_json(json.dumps(data))
 #    return df
 
+energy_names = {'COL': 'Coal',
+                'NG' : 'Natural Gas',
+                'NUC': 'Nuclear',
+                'OIL': 'Oil',
+                'SUN': 'Solar',
+                'WAT': 'Hydroelectric',
+                'WND': 'Wind'}
+
 
 def load_data(energy_source):
     connection = sqlite3.connect('EnergySources.db')
@@ -109,13 +117,13 @@ def add_harmonic_sine(fig, dated, extension):
     return fig
 
 
-def render_data(energy_source):
+def render_data(energy_source, prediction_days):
     dated = load_data(energy_source).copy()
     dated['ds'] = pd.to_datetime(dated['ds'])
     dated = dated[['ds', 'y']]
     
     last_date = dated['ds'].iloc[-1]
-    new_index = pd.date_range(start=last_date, periods=180, freq='D')
+    new_index = pd.date_range(start=last_date, periods=prediction_days, freq='D')
     new_date_range = pd.DataFrame(new_index, columns=['ds'])
     new_date_range['y'] = np.NaN
     extension = pd.concat([dated, new_date_range]).reset_index()
@@ -153,16 +161,24 @@ def render_data(energy_source):
 
 @app.route('/california_dashboard', methods=['GET', 'POST'])
 def california_dashboard():
+    context = {'graphJSON': None,
+               'energy_type': "Solar"}
+    fig = None;
+    graphJson=None;
     if request.method == 'POST':
         energy_type = request.form['energy_source']
-        print(energy_type)
-        fig = render_data(energy_type)
+        prediction = int(request.form['prediction'])
+        fig = render_data(energy_type, prediction)
         graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
-        return render_template('calidash.html', graphJSON=graphJSON)
+        context['graphJSON'] = graphJSON
+        context['energy_type'] = energy_names.get(energy_type)
     else:
-        fig = render_data("SUN")
+        fig = render_data("SUN", 180)
         graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
-        return render_template('calidash.html', graphJSON=graphJSON)
+        context['graphJSON'] = graphJSON
+        context['energy_type'] = energy_names.get("SUN")
+
+    return render_template('calidash.html', context=context)
 
 
 @app.route('/')
