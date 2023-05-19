@@ -20,21 +20,6 @@ import sqlite3
 app = Flask(__name__)
 
 
-# def pull_data():
-#    EIA_API = os.getenv('EIA_API')
-#
-#    route_daily = 'https://api.eia.gov/v2/electricity/rto/daily-fuel-type-data/data/'
-#    query_daily = '&frequency=daily&data[0]=y&facets[fueltype][]=SUN&facets[respondent][]=CAL&facets[timezone][]=Pacific&sort[0][column]=ds&sort[0][direction]=desc&offset=0&length=5000'
-#
-#    r = requests.get(
-#        route_daily + '?api_key=' + EIA_API + query_daily
-#    )
-#    x = r.json()
-#    data = x["response"]["data"]
-#
-#    df = pd.read_json(json.dumps(data))
-#    return df
-
 energy_names = {'COL': 'Coal',
                 'NG' : 'Natural Gas',
                 'NUC': 'Nuclear',
@@ -78,17 +63,6 @@ def pull_if_needed():
     next_pull = last_pull + timedelta(days=1)
 
     if not last_pull == yesterday:
-        #print(route + '?api_key=' + EIA_API + api_query)
-        #r = requests.get(
-        #    route_daily + '?api_key=' + EIA_API + query_daily.format(next_pull)
-        #)
-        #x = r.json()
-        #print(x)
-        #data = x["response"]["data"]
-
-        #df = pd.read_json(json.dumps(data))
-        #print(df)
-
         energy_sources = ['COL', 'NG', 'NUC', 'OIL', 'SUN', 'WAT', 'WND']
         new_sources = pd.DataFrame(columns=['period'])
 
