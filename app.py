@@ -47,7 +47,6 @@ def load_data(energy_source):
 def pull_if_needed():
     config = dotenv_values("environ.env")
     EIA_API = config.get('EIA_API')
-    print("\n", EIA_API, "\n")
     connection = sqlite3.connect('EnergySources.db')
     query = """select  
                    period 
@@ -85,6 +84,22 @@ def pull_if_needed():
         connection.commit()
     connection.close()
 
+
+def get_todays_energy():
+    config = dotenv_values("environ.env")
+    EIA_API = config.get('EIA_API')
+    today = date.today()
+    route_today = 'https://api.eia.gov/v2/electricity/rto/fuel-type-data/data/'
+    query_today = '&frequency=hourly&data[0]=value&facets[respondent][]=CAL&start={}T00&sort[0][column]=period&sort[0][direction]=desc&offset=0&length=5000'
+
+    r_source = requests.get(
+        route_today + '?api_key=' + EIA_API + query_today.format(today)
+    )
+
+    x_source = r_source.json()
+    df_today = pd.read_json(json.dumps(x_source["response"]["data"]))[['fueltype', 'value']]
+    
+    return df_today['value'].sum()
 
 
 def sin_plot(x, amp, per, phase, vert, growth):
@@ -192,8 +207,10 @@ def render_data(energy_source, prediction_days):
 @app.route('/california_dashboard', methods=['GET', 'POST'])
 def california_dashboard():
     pull_if_needed()
+    energy_today = get_todays_energy()
     context = {'graphJSON': None,
-               'energy_type': "Solar"}
+               'energy_type': "Solar",
+               'energy_today': energy_today}
     fig = None;
     graphJson=None;
     if request.method == 'POST':

@@ -2,6 +2,8 @@
 <html>
   <body>
     <h1>California Energy Production</h1>
+    <h2>Today's Energy Production: {{ context.energy_today }} MWh</h2>
+
     <form action="/california_dashboard" method="post">
       <input type="radio" id="COL" value="COL" name="energy_source">
       <label for="COL">Coal</label>
