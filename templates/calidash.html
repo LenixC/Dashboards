@@ -21,8 +21,8 @@
     <div class="flex flex-wrap">
       <div class="w-full lg:w-1/3 pt-6 pl-4 pr-4">
         <form action="/california_dashboard" method="post">
-          <div class="flex lg:flex-col flex-wrap justify-center items-start pb-4 space-y-2">
-            <div class="flex items-center pl-4 w-full 
+          <div class="flex flex-col sm:flex-row lg:flex-col flex-wrap justify-center items-start pb-4">
+            <div class="flex items-center pl-4 m-2 w-full sm:w-1/5 lg:w-full
                         border border-gray-200 
                         rounded dark:border-gray-700">
               <input type="radio" id="COL" value="COL" name="energy_source" 
@@ -30,7 +30,7 @@
               <label for="COL" 
                      class="w-full py-1 ml-2 text-sm font-medium text-gray-900">Coal</label>
             </div>
-            <div class="flex items-center pl-4 w-full
+            <div class="flex items-center pl-4 m-2 w-full sm:w-1/5 lg:w-full
                         border border-gray-200 
                         rounded dark:border-gray-700">
               <input type="radio" id="NG" value="NG"  name="energy_source" 
@@ -38,7 +38,7 @@
               <label for="NG" 
                      class="w-full py-1 ml-2 text-sm font-medium text-gray-900">Natural Gas</label>
             </div>
-            <div class="flex items-center pl-4 w-full 
+            <div class="flex items-center pl-4 m-2 w-full sm:w-1/5 lg:w-full
                         border border-gray-200 
                         rounded dark:border-gray-700">
               <input type="radio" id="NUC" value="NUC" name="energy_source"
@@ -46,7 +46,7 @@
               <label for="NUC"
                      class="w-full py-1 ml-2 text-sm font-medium text-gray-900">Nuclear</label>
             </div>
-            <div class="flex items-center pl-4 w-full 
+            <div class="flex items-center pl-4 m-2 w-full sm:w-1/5 lg:w-full 
                         border border-gray-200 
                         rounded dark:border-gray-700">
               <input type="radio" id="OIL" value="OIL" name="energy_source"
@@ -54,7 +54,7 @@
               <label for="OIL"
                      class="w-full py-1 ml-2 text-sm font-medium text-gray-900">Oil</label>
             </div>
-            <div class="flex items-center pl-4 w-full 
+            <div class="flex items-center pl-4 m-2 w-full sm:w-1/5 lg:w-full 
                         border border-gray-200 
                         rounded dark:border-gray-700">
               <input type="radio" id="SUN" value="SUN" name="energy_source" checked
@@ -62,7 +62,7 @@
               <label for="SUN"
                      class="w-full py-1 ml-2 text-sm font-medium text-gray-900">Solar</label>
             </div>
-            <div class="flex items-center pl-4 w-full 
+            <div class="flex items-center pl-4 m-2 w-full sm:w-1/5 lg:w-full 
                         border border-gray-200 
                         rounded dark:border-gray-700">
               <input type="radio" id="WAT" value="WAT" name="energy_source"
@@ -70,7 +70,7 @@
               <label for="WAT"
                      class="w-full py-1 ml-2 text-sm font-medium text-gray-900">Hydroelectric</label>
             </div>
-            <div class="flex items-center pl-4 w-full 
+            <div class="flex items-center pl-4 m-2 w-full sm:w-1/5 lg:w-full 
                         border border-gray-200 
                         rounded dark:border-gray-700">
               <input type="radio" id="WND" value="WND" name="energy_source"
@@ -85,7 +85,7 @@
             <input type="range" id="prediction" name="prediction"
               min="0" max="365" step="1" value="180">
             <p>
-            <output id="pred_days" class="pl-4">180</output></p>
+            <output id="pred_days" class="m-2">180</output></p>
           </div>
 
           <div class="flex justify-center">
