@@ -2,6 +2,8 @@ from flask import Flask, render_template, request
 from scipy import optimize
 from prophet import Prophet
 from prophet.plot import plot_plotly, plot_components_plotly
+from datetime import datetime, date, timedelta
+from dotenv import dotenv_values
 
 import pandas as pd
 import numpy as np
@@ -55,6 +57,60 @@ def load_data(energy_source):
     connection.close()
     
     return df
+
+
+def pull_if_needed():
+    config = dotenv_values("environ.env")
+    EIA_API = config.get('EIA_API')
+    print("\n", EIA_API, "\n")
+    connection = sqlite3.connect('EnergySources.db')
+    query = """select  
+                   period 
+                from  
+                    EnergySources 
+                order by 
+                    period desc
+                limit
+                    1"""
+    df = pd.read_sql_query(query, connection)
+    yesterday = date.today() - timedelta(days=1)
+    last_pull = datetime.strptime(df['period'].iloc[0], '%Y-%m-%d').date()
+    next_pull = last_pull + timedelta(days=1)
+
+    if not last_pull == yesterday:
+        #print(route + '?api_key=' + EIA_API + api_query)
+        #r = requests.get(
+        #    route_daily + '?api_key=' + EIA_API + query_daily.format(next_pull)
+        #)
+        #x = r.json()
+        #print(x)
+        #data = x["response"]["data"]
+
+        #df = pd.read_json(json.dumps(data))
+        #print(df)
+
+        energy_sources = ['COL', 'NG', 'NUC', 'OIL', 'SUN', 'WAT', 'WND']
+        new_sources = pd.DataFrame(columns=['period'])
+
+        for source in energy_sources:
+            route_daily_source = 'https://api.eia.gov/v2/electricity/rto/daily-fuel-type-data/data/'
+            query_daily_source = '&frequency=daily&data[0]=value&facets[fueltype][]={}&facets[respondent][]=CAL&facets[timezone][]=Pacific&start={}&sort[0][column]=period&sort[0][direction]=desc&offset=0&length=5000'
+
+            r_source = requests.get(
+                route_daily_source + '?api_key=' + EIA_API + query_daily_source.format(source, next_pull)
+            )
+
+            x_source = r_source.json()
+            df_source = pd.read_json(json.dumps(x_source["response"]["data"]))[['period', 'value']]
+            df_source = df_source.rename(columns={'value': source})
+
+            new_sources = pd.merge(new_sources, df_source, on='period', how="outer")
+        new_sources[energy_sources] = new_sources[energy_sources].astype(int)
+        new_sources['period'] = new_sources['period'].astype(str)
+        new_sources.to_sql('EnergySources', connection, if_exists='append', index=False)
+        connection.commit()
+    connection.close()
+
 
 
 def sin_plot(x, amp, per, phase, vert, growth):
@@ -161,6 +217,7 @@ def render_data(energy_source, prediction_days):
 
 @app.route('/california_dashboard', methods=['GET', 'POST'])
 def california_dashboard():
+    pull_if_needed()
     context = {'graphJSON': None,
                'energy_type': "Solar"}
     fig = None;
