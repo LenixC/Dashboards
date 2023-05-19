@@ -19,12 +19,13 @@
       <label for="WND">Wind</label>
 
       <p>
-      <label for="prediction">Prediction in days (0-365)</label>
-      <input type="number" id="prediction" name="prediction"
-        min="0" max="365" value="180">
+        <label for="prediction">Prediction in days (0-365)</label>
+        <input type="range" id="prediction" name="prediction"
+          min="0" max="365" step="1" value="180">
+        <p>Days: <output id="pred_days"></output></p>
       </p>
 
-      <input type="submit" value="submit" /></p>
+      <input type="submit" value="submit" />
     </form>
     <h2>{{ context.energy_type }} Power Production</h2>
     <div id='chart' class='chart'”></div>
@@ -32,6 +33,13 @@
  
   <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
   <script type='text/javascript'>
+    const value = document.querySelector("#pred_days")
+    const input = document.querySelector("#prediction")
+    value.textContent = input.value
+    input.addEventListener("input", (event) => {
+      value.textContent = event.target.value
+    })
+    
     var graphs = {{ context.graphJSON | safe }};
     Plotly.plot('chart',graphs,{});
   </script>
