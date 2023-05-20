@@ -106,7 +106,6 @@ def get_todays_energy():
     )
 
     x_source = r_source.json()
-    print(pd.read_json(json.dumps(x_source["response"]["data"]))[['period', 'value']])
     df_today = pd.read_json(json.dumps(x_source["response"]["data"]))[['fueltype', 'value']]
   
     fig = px.pie(df_today, values='value', names='fueltype',
