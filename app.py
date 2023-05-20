@@ -201,7 +201,7 @@ def render_data(energy_source, prediction_days):
     fig = add_prophet(fig, dated, extension)
     if energy_source in ["NG", "COL"]:
         fig = add_harmonic_sine(fig, dated, extension)
-    if energy_source in ["NUC", "OIL", "WAT"]:
+    elif energy_source in ["NUC", "OIL", "WAT"]:
         pass
     else:
         fig = add_sine(fig, dated, extension)
