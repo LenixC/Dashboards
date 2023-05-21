@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 from scipy import optimize
 from prophet import Prophet
 from datetime import datetime, date, timedelta
+from plotly import utils
 
 import pandas as pd
 import numpy as np
@@ -9,7 +10,6 @@ import plotly.express as px
 
 import os
 import json
-import plotly
 import requests 
 import sqlite3
 
@@ -233,7 +233,7 @@ def california_dashboard():
     pull_if_needed()
     energy_today, energy_pie = get_todays_energy()
     energy_today = human_format(energy_today)
-    pieJSON = json.dumps(energy_pie, cls=plotly.utils.PlotlyJSONEncoder)
+    pieJSON = json.dumps(energy_pie, cls=utils.PlotlyJSONEncoder)
     context = {'graphJSON': None,
                'pieJSON': pieJSON,
                'energy_type': "Solar",
@@ -244,12 +244,12 @@ def california_dashboard():
         energy_type = request.form['energy_source']
         prediction = int(request.form['prediction'])
         fig = render_data(energy_type, prediction)
-        graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+        graphJSON = json.dumps(fig, cls=utils.PlotlyJSONEncoder)
         context['graphJSON'] = graphJSON
         context['energy_type'] = energy_names.get(energy_type)
     else:
         fig = render_data("SUN", 180)
-        graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+        graphJSON = json.dumps(fig, cls=utils.PlotlyJSONEncoder)
         context['graphJSON'] = graphJSON
         context['energy_type'] = energy_names.get("SUN")
 
