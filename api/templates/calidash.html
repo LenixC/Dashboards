@@ -1,0 +1,169 @@
+<!doctype html>
+<html>
+  <head>  
+    <link rel="stylesheet" href="{{url_for('static',filename='css/main.css')}}">
+  </head>
+
+  <body class='text-blue-950 bg-grey-100 m-16'>
+    <div class="flex flex-col sm:flex-row pt-4 pb-4 m-4">
+      <h1 class="flex flex-shrink-3 pb-4 break-words text-5xl font-bold drop-shadow-lg">California Energy Production</h1>
+      <div class="flex-grow"></div>
+      <div class="flex flex-col items-center
+                  bg-blue-100 p-4 rounded-2xl shadow-lg">
+        <h2 class="flex text-center">Today's Energy Production:</h2> 
+        <h2 class="flex text-center text-4xl">{{ context.energy_today }} MWh</h2>
+      </div>
+      <div id="pie" class="chart flex items-center justify-center pl-4 pr-4
+                           bg-blue-100 p-4 rounded-2xl shadow-lg"></div>
+    </div>
+
+    <div class="flex items-center justify-center">
+      <h2 class="text-3xl drop-shadow-md">{{ context.energy_type }} Power Production</h2>
+    </div>
+    <div class="flex flex-wrap m-4
+                bg-blue-100 p-4 rounded-2xl shadow-lg">
+      <div class="w-full lg:w-1/4 pt-6 pl-4 pr-4">
+        <form action="/california_dashboard" method="post">
+          <div class="flex flex-col sm:flex-row lg:flex-col flex-wrap justify-center items-start pb-4">
+            <div class="flex items-center h-10 pl-4 pr-4 m-2 w-full sm:w-1/5 lg:w-full
+                        border border-blue-600 bg-blue-200
+                        hover:bg-blue-300
+                        rounded">
+              <input type="radio" id="COL" value="COL" name="energy_source" 
+                     class="form-radio appearance-none w-4 h-4 box-border aspect-square rounded-full bg-blue-200 
+                            text-blue-600 border-blue-300 border-2 ring-blue-500 ring-offset-blue-800 
+                            focus:ring-blue-500 focus:ring-2
+                            checked:bg-blue-500 checked:border-blue-300 checked:border-4 
+                            checked:ring-1 checked:drop-shadow transition">
+              <label for="COL" 
+                     class="w-full py-1 ml-2 text-sm font-medium text-gray-900">Coal</label>
+            </div>
+            <div class="flex items-center h-10 pl-4 pr-4 m-2 w-full sm:w-1/5 lg:w-full
+                        border border-blue-600 bg-blue-200
+                        hover:bg-blue-300
+                        rounded">
+              <input type="radio" id="NG" value="NG"  name="energy_source" 
+                     class="form-radio appearance-none w-4 h-4 box-border aspect-square rounded-full bg-blue-200 
+                            text-blue-600 border-blue-300 border-2 ring-blue-500 ring-offset-blue-800 
+                            focus:ring-blue-500 focus:ring-2
+                            checked:bg-blue-500 checked:border-blue-300 checked:border-4 
+                            checked:ring-1 checked:drop-shadow transition">
+              <label for="NG" 
+                     class="w-full py-1 ml-2 text-sm font-medium text-gray-900">Natural Gas</label>
+            </div>
+            <div class="flex items-center h-10 pl-4 pr-4 m-2 w-full sm:w-1/5 lg:w-full
+                        border border-blue-600 bg-blue-200
+                        hover:bg-blue-300
+                        rounded">
+              <input type="radio" id="NUC" value="NUC" name="energy_source"
+                     class="form-radio appearance-none w-4 h-4 box-border aspect-square rounded-full bg-blue-200 
+                            text-blue-600 border-blue-300 border-2 ring-blue-500 ring-offset-blue-800 
+                            focus:ring-blue-500 focus:ring-2
+                            checked:bg-blue-500 checked:border-blue-300 checked:border-4 
+                            checked:ring-1 checked:drop-shadow transition">
+              <label for="NUC"
+                     class="w-full py-1 ml-2 text-sm font-medium text-gray-900">Nuclear</label>
+            </div>
+            <div class="flex items-center h-10 pl-4 pr-4 m-2 w-full sm:w-1/5 lg:w-full
+                        border border-blue-600 bg-blue-200
+                        hover:bg-blue-300
+                        rounded">
+              <input type="radio" id="OIL" value="OIL" name="energy_source"
+                     class="form-radio appearance-none w-4 h-4 box-border aspect-square rounded-full bg-blue-200 
+                            text-blue-600 border-blue-300 border-2 ring-blue-500 ring-offset-blue-800 
+                            focus:ring-blue-500 focus:ring-2
+                            checked:bg-blue-500 checked:border-blue-300 checked:border-4 
+                            checked:ring-1 checked:drop-shadow transition">
+              <label for="OIL"
+                     class="w-full py-1 ml-2 text-sm font-medium text-gray-900">Oil</label>
+            </div>
+            <div class="flex items-center h-10 pl-4 pr-4 m-2 w-full sm:w-1/5 lg:w-full
+                        border border-blue-600 bg-blue-200
+                        hover:bg-blue-300
+                        rounded">
+              <input type="radio" id="SUN" value="SUN" name="energy_source" checked
+                     class="form-radio appearance-none w-4 h-4 box-border aspect-square rounded-full bg-blue-200 
+                            text-blue-600 border-blue-300 border-2 ring-blue-500 ring-offset-blue-800 
+                            focus:ring-blue-500 focus:ring-2
+                            checked:bg-blue-500 checked:border-blue-300 checked:border-4 
+                            checked:ring-1 checked:drop-shadow transition">
+              <label for="SUN"
+                     class="w-full py-1 ml-2 text-sm font-medium text-gray-900">Solar</label>
+            </div>
+            <div class="flex items-center h-10 pl-4 pr-4 m-2 w-full sm:w-1/5 lg:w-full
+                        border border-blue-600 bg-blue-200
+                        hover:bg-blue-300
+                        rounded">
+              <input type="radio" id="WAT" value="WAT" name="energy_source"
+                     class="form-radio appearance-none w-4 h-4 box-border aspect-square rounded-full bg-blue-200 
+                            text-blue-600 border-blue-300 border-2 ring-blue-500 ring-offset-blue-800 
+                            focus:ring-blue-500 focus:ring-2
+                            checked:bg-blue-500 checked:border-blue-300 checked:border-4 
+                            checked:ring-1 checked:drop-shadow transition">
+              <label for="WAT"
+                     class="w-full py-1 ml-2 text-sm font-medium text-gray-900">Hydroelectric</label>
+            </div>
+            <div class="flex items-center h-10 pl-4 pr-4 m-2 w-full sm:w-1/5 lg:w-full
+                        border border-blue-600 bg-blue-200
+                        hover:bg-blue-300
+                        rounded">
+              <input type="radio" id="WND" value="WND" name="energy_source"
+                     class="form-radio appearance-none w-4 h-4 box-border aspect-square rounded-full bg-blue-200 
+                            text-blue-600 border-blue-300 border-2 ring-blue-500 ring-offset-blue-800 
+                            focus:ring-blue-500 focus:ring-2
+                            checked:bg-blue-500 checked:border-blue-300 checked:border-4 
+                            checked:ring-1 checked:drop-shadow transition">
+              <label for="WND"
+                     class="w-full py-1 ml-2 text-sm font-medium text-gray-900">Wind</label>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-center pb-4 space-y-4 sm:space-y-0 sm:space-x-4">
+            <label for="prediction">Prediction in days (0-365)</label>
+            <input type="range" id="prediction" name="prediction"
+              min="0" max="365" step="1" value="180"
+              class="appearance-none bg-blue-300 h-1 rounded-full
+                     hover:bg-blue-400 transition">
+            <p>
+            <div class="w-3 w-min-3 w-max-3 justify-center items-center">
+              <output id="pred_days" class="">180</output></p>
+            </div>
+          </div>
+
+          <div class="flex justify-center">
+            <button type="submit" value="submit" 
+              class="bg-blue-500 text-white font-bold shadow-lg
+                     py-2 px-4 rounded 
+                     hover:bg-blue-600 hover:shadow-inner transition">
+              Predict
+            </button>
+          </div>
+        </form>
+      </div>
+      <div class="w-full lg:w-3/4 m-0 p-0">
+        <div id="chart" class="chart"></div>
+      </div>
+    </div>
+  </body>
+ 
+  <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+  <script type='text/javascript'>
+    const value = document.querySelector("#pred_days")
+    const input = document.querySelector("#prediction")
+    value.textContent = input.value
+    input.addEventListener("input", (event) => {
+      value.textContent = event.target.value
+    })
+    
+    var graphs = {{ context.graphJSON | safe }};
+    Plotly.plot('chart',graphs,{});
+
+    var pie_chart = {{ context.pieJSON | safe }};
+    Plotly.plot('pie', pie_chart, {});
+
+    addEventListener("resize", scalePlots);
+    function scalePlots(){
+      Plotly.newPlot('chart',graphs,{});
+    }
+  </script>
+</html>
