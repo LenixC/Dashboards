@@ -1,9 +1,7 @@
 from flask import Flask, render_template, request
 from scipy import optimize
 from prophet import Prophet
-from prophet.plot import plot_plotly, plot_components_plotly
 from datetime import datetime, date, timedelta
-from dotenv import dotenv_values
 
 import pandas as pd
 import numpy as np
