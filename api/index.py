@@ -1,12 +1,12 @@
 from flask import Flask, render_template, request
-from scipy import optimize
+from scipy.optimize import curve_fit
 from prophet import Prophet
 from datetime import datetime, date, timedelta
-from plotly import utils
+from plotly.utils import PlotlyJSONEncoder
+from numpy import sin, NaN
+from plotly.express import pie, scatter
 
 import pandas as pd
-import numpy as np
-import plotly.express as px
 
 import os
 import json
@@ -104,7 +104,7 @@ def get_todays_energy():
     x_source = r_source.json()
     df_today = pd.read_json(json.dumps(x_source["response"]["data"]))[['fueltype', 'value']]
   
-    fig = px.pie(df_today, values='value', names='fueltype',
+    fig = pie(df_today, values='value', names='fueltype',
                  width=150, height=150)
     fig.update_layout(margin=dict(t=0,
                                   b=0,
@@ -118,14 +118,14 @@ def get_todays_energy():
 
 
 def sin_plot(x, amp, per, phase, vert, growth):
-  return (((amp)*np.sin(per*(phase+x)))+vert) + (growth*x)
+  return (((amp)*sin(per*(phase+x)))+vert) + (growth*x)
 
 
 def harmonic_sine(x, b_1, b_2, b_3, b_4, period, phase, vert, amp, growth):
-  sin1 = b_1*np.sin(period*(phase+x))
-  sin2 = b_2*np.sin(2*period*(phase+x))
-  sin3 = b_3*np.sin(3*period*(phase+x))
-  sin4 = b_4*np.sin(4*period*(phase+x))
+  sin1 = b_1*sin(period*(phase+x))
+  sin2 = b_2*sin(2*period*(phase+x))
+  sin3 = b_3*sin(3*period*(phase+x))
+  sin4 = b_4*sin(4*period*(phase+x))
   return amp*(sin1 + sin2 + sin3 + sin4) + (growth*x) + vert
 
 
@@ -141,7 +141,7 @@ def add_prophet(fig, dated, extension):
 
 
 def add_sine(fig, dated, extension):
-    params, params_covariance = optimize.curve_fit(sin_plot, 
+    params, params_covariance = curve_fit(sin_plot, 
                                                    dated.index, dated['y'],
                                                    p0=[40000, .0172, 0.25, 90000, 10],
                                                    )
@@ -157,7 +157,7 @@ def add_sine(fig, dated, extension):
 
 
 def add_harmonic_sine(fig, dated, extension):
-    params, params_covariance = optimize.curve_fit(harmonic_sine, 
+    params, params_covariance = curve_fit(harmonic_sine, 
                                                    dated.index, dated['y'],
                                                    p0=[3, 1, 1, 1, 
                                                        0.0172, 0, 0,
@@ -185,10 +185,10 @@ def render_data(energy_source, prediction_days):
     last_date = dated['ds'].iloc[-1]
     new_index = pd.date_range(start=last_date, periods=prediction_days, freq='D')
     new_date_range = pd.DataFrame(new_index, columns=['ds'])
-    new_date_range['y'] = np.NaN
+    new_date_range['y'] = NaN
     extension = pd.concat([dated, new_date_range]).reset_index()
     extension = extension.drop(columns=['index'])
-    fig = px.scatter()
+    fig = scatter()
 
     fig.add_scatter(x=extension['ds'], y=extension['y'], mode="markers",
                     marker=dict(size=3),
@@ -233,7 +233,7 @@ def california_dashboard():
     pull_if_needed()
     energy_today, energy_pie = get_todays_energy()
     energy_today = human_format(energy_today)
-    pieJSON = json.dumps(energy_pie, cls=utils.PlotlyJSONEncoder)
+    pieJSON = json.dumps(energy_pie, cls=PlotlyJSONEncoder)
     context = {'graphJSON': None,
                'pieJSON': pieJSON,
                'energy_type': "Solar",
@@ -244,12 +244,12 @@ def california_dashboard():
         energy_type = request.form['energy_source']
         prediction = int(request.form['prediction'])
         fig = render_data(energy_type, prediction)
-        graphJSON = json.dumps(fig, cls=utils.PlotlyJSONEncoder)
+        graphJSON = json.dumps(fig, cls=PlotlyJSONEncoder)
         context['graphJSON'] = graphJSON
         context['energy_type'] = energy_names.get(energy_type)
     else:
         fig = render_data("SUN", 180)
-        graphJSON = json.dumps(fig, cls=utils.PlotlyJSONEncoder)
+        graphJSON = json.dumps(fig, cls=PlotlyJSONEncoder)
         context['graphJSON'] = graphJSON
         context['energy_type'] = energy_names.get("SUN")
 
