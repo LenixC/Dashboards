@@ -114,7 +114,8 @@ def get_todays_energy():
                                   b=0,
                                   l=0,
                                   r=0,),
-                      showlegend=False)
+                      showlegend=False,
+                      paper_bgcolor='rgba(0, 0, 0, 0)')
     fig.update_traces(textinfo='none')
     
     return df_today['value'].sum(), fig
@@ -221,7 +222,12 @@ def render_data(energy_source, prediction_days):
         margin=dict(t=0,
                     b=0,
                     l=0,
-                    r=0,)
+                    r=0,
+                    ),
+        paper_bgcolor='rgba(0, 0, 0, 0)',
+        plot_bgcolor='rgba(0, 0, 0, 0)',
+        legend=dict(yanchor="top", y=1.25, xanchor="left", x=0.75,
+                    bgcolor='rgba(255, 255, 255, .6)')
     )
     return fig
 
